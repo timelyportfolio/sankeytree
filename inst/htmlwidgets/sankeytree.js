@@ -32,7 +32,7 @@ HTMLWidgets.widget({
         var root;
         
         // define the baseSvg, attaching a class for styling and the zoomListener
-        var baseSvg = d3.select("#" + opts.id).append("svg")
+        var baseSvg = d3.select(el).append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
             .attr("class", "overlay")      

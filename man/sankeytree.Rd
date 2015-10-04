@@ -6,7 +6,8 @@
 \alias{sankeytree-package}
 \title{Sankey Diagrams as Collapsible Trees}
 \usage{
-sankeytree(data = NULL, width = NULL, height = NULL)
+sankeytree(data = NULL, maxLabelLength = NULL, nodeHeight = NULL,
+  width = NULL, height = NULL)
 }
 \description{
 Combining Sankey diagrams with collapsible trees and adding some new interactivity might help us analyze, instruct, and decide.
