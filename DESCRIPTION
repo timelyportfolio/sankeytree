@@ -1,0 +1,12 @@
+Package: sankeytree
+Title: Sankey Diagrams as Collapsible Trees
+Version: 0.0.1
+Author: Kenton Russell
+Maintainer: kent.russell@timelyportfolio
+Description: Combining Sankey diagrams with collapsible trees and adding some new interactivity might help us analyze, instruct, and decide.
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/timelyportfolio/sankeytree
+BugReports: https://github.com/timelyportfolio/sankeytree/issues
+Suggests: 
+    testthat
