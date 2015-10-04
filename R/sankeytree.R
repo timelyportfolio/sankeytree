@@ -5,11 +5,16 @@
 #' @import htmlwidgets
 #'
 #' @export
-sankeytree <- function(message, width = NULL, height = NULL) {
+sankeytree <- function(data = NULL, width = NULL, height = NULL) {
+  
+  # convert rpart data
+  if(inherits(data,"rpart")){
+    data <- convert_rpart(data)
+  }
 
   # forward options using x
   x = list(
-    message = message
+    data = data
   )
 
   # create widget
