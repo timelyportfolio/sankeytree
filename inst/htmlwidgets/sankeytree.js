@@ -49,6 +49,10 @@ HTMLWidgets.widget({
         var diagonal = d3.svg.diagonal()
             .projection(function(d) {
                 return [d.y, d.x];
+            })
+            .source(function(d){
+              if(d.ystacky) return d
+              return d.source;
             });
     
         // A recursive helper function for performing some setup by walking through all nodes
@@ -483,6 +487,49 @@ HTMLWidgets.widget({
                 .style("fill-opacity", 0);
     
             // Update the links…
+            
+            // Size link width according to n based on total n
+            wscale = d3.scale.linear()
+                .range([0,opts.nodeHeight || 25])
+                .domain([0,treeData.info.fitted["(fitted)"].length])
+                
+            
+            // probably not the best way or place to do this
+            //   but start here with adjusting paths higher
+            //   or lower to do like a stacked bar
+            //   since our stroke-width will reflect size
+            //   similar to a Sankey
+            
+            // 1. start by nesting our link paths by source
+            var link_nested = d3.nest()
+                                .key(function(d){
+                                  return d.source.id
+                                })
+                                .entries(links);
+                            
+            // use d3 stack layout
+            var stack = d3.layout.stack()
+                          .values(function(d){
+                            return d.values;
+                          })
+                          .x(function(d){
+                            return d.source.x;
+                          })
+                          .y(function(d){
+                            return wscale(
+                              + d.target.name.replace(/.*n = ([0-9]*)/,"$1")
+                            )
+                          })
+                          .out(function(d,y0,y){
+                            debugger;
+                            d.x = d.source.x + y;
+                            d.y = d.source.y;
+                            d.ystack0 = y0;
+                            d.ystacky = y;
+                          });
+                          
+            stack(link_nested);
+            
             var link = svgGroup.selectAll("path.link")
                 .data(links, function(d) {
                     return d.target.id;
@@ -501,15 +548,10 @@ HTMLWidgets.widget({
                         target: o
                     });
                 });
-  
-            // Size link width according to n based on total n
-            wscale = d3.scale.linear()
-                .range([0,50])
-                .domain([0,treeData.info.fitted["(fitted)"].length])
-                
+
             link.style("stroke-width",function(d){
               return wscale( + d.target.name.replace(/.*n = ([0-9]*)/,"$1") )
-            })
+            });
             
             // Transition links to their new position.
             link.transition()
