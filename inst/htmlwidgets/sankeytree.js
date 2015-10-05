@@ -490,7 +490,7 @@ HTMLWidgets.widget({
             
             // Size link width according to n based on total n
             wscale = d3.scale.linear()
-                .range([0,opts.nodeHeight || 25])
+                .range([0,50])
                 .domain([0,treeData.info.fitted["(fitted)"].length])
                 
             
@@ -506,7 +506,25 @@ HTMLWidgets.widget({
                                   return d.source.id
                                 })
                                 .entries(links);
-                            
+            // 2. manual method for stacking since d3.layout.stack
+            //      did not work
+            link_nested.forEach(function(d){
+              var ystacky = 0;
+              d.values.reverse().forEach(function(dd){
+                var ywidth = wscale(
+                                + dd.target.name.replace(/.*n = ([0-9]*)/,"$1")
+                             );
+                var srcwidth = wscale(
+                                + dd.source.name.replace(/.*n = ([0-9]*)/,"$1")
+                             );
+                srcwidth = isNaN(srcwidth) ? wscale.range()[1]/2 : srcwidth;
+                ystacky = ystacky + ywidth;                               
+                dd.x = dd.source.x + srcwidth/2 - ystacky + ywidth/2;
+                dd.y = dd.source.y;
+                dd.ystacky = ystacky;
+              })
+            })
+            /*  
             // use d3 stack layout
             var stack = d3.layout.stack()
                           .values(function(d){
@@ -521,13 +539,16 @@ HTMLWidgets.widget({
                             )
                           })
                           .out(function(d,y0,y){
-                            d.x = d.source.x + y;
+                            d.x = d.source.x - y + 50 ;
                             d.y = d.source.y;
                             d.ystack0 = y0;
                             d.ystacky = y;
                           });
                           
-            stack(link_nested);
+            link_nested.forEach(function(d){
+              stack(d);
+            })
+            */
             
             var link = svgGroup.selectAll("path.link")
                 .data(links, function(d) {
@@ -556,7 +577,7 @@ HTMLWidgets.widget({
             link.transition()
                 .duration(duration)
                 .attr("d", diagonal);
-    
+
             // Transition exiting nodes to the parent's new position.
             link.exit().transition()
                 .duration(duration)
