@@ -3,3 +3,7 @@ dependencies:
     version: 3.5.6
     src: htmlwidgets/lib/d3
     script: d3.min.js
+  - name: sankeytree
+    version: 0.0.1
+    src: htmlwidgets/lib/sankeytree
+    stylesheet: sankeytree.css
