@@ -20,8 +20,8 @@ sankeytree <- function(
   x = list(
     data = data,
     opts = list(
-      maxLabelLength = NULL,
-      nodeHeight = NULL
+      maxLabelLength = maxLabelLength,
+      nodeHeight = nodeHeight
     )
   )
 

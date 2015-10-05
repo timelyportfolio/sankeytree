@@ -18,3 +18,5 @@ sankeytreeR:::convert_rpart(rp)
 
 #see what it looks like
 sankeytree(rp)
+
+sankeytree(rp, maxLabelLength = 10, nodeHeight = 100)
