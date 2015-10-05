@@ -1,6 +1,7 @@
 library(rpart)
 library(partykit)
 library(pipeR)
+library(sankeytreeR)
 
 #set up a little rpart as an example
 rp <- rpart(
@@ -13,4 +14,7 @@ rp <- rpart(
 #convert rpart to a hierarchy using convert_rpart in converters.R
 # this was the original conversion
 # and I already see lots of room for improvement
-convert_rpart(rp)
+sankeytreeR:::convert_rpart(rp)
+
+#see what it looks like
+sankeytree(rp)
