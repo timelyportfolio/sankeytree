@@ -20,3 +20,13 @@ sankeytreeR:::convert_rpart(rp)
 sankeytree(rp)
 
 sankeytree(rp, maxLabelLength = 10, nodeHeight = 100)
+
+
+
+
+# do with kyphosis example
+sankeytree(
+  rpart(Kyphosis ~ Age + Number + Start, data = kyphosis),
+  maxLabelLength = 10,
+  nodeHeight = 200
+)
