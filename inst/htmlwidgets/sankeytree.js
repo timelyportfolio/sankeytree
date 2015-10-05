@@ -521,7 +521,6 @@ HTMLWidgets.widget({
                             )
                           })
                           .out(function(d,y0,y){
-                            debugger;
                             d.x = d.source.x + y;
                             d.y = d.source.y;
                             d.ystack0 = y0;
