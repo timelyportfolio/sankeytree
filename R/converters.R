@@ -1,3 +1,8 @@
+#' Convert rpart to d3.js hierarchy
+#' 
+#' This thing is not even close to being done.
+#' 
+#' @param rpart_data \code{rpart} object to be converted
 convert_rpart = function (rpart_data = NULL) {
   rpk <- as.party(rpart_data)
   data = rapply(rpk$node,unclass,how="replace")
