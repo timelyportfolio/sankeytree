@@ -138,7 +138,7 @@ HTMLWidgets.widget({
             d3.select(domNode).attr('class', 'node activeDrag');
     
             svgGroup.selectAll("g.node").sort(function(a, b) { // select the parent and sort the path's
-                if (a.id != draggingNode.id) return 1; // a is not the hovered element, send "a" to the back
+                if (a[opts.id] != draggingNode[opts.id]) return 1; // a is not the hovered element, send "a" to the back
                 else return -1; // a is the hovered element, bring "a" to the front
             });
             // if nodes has children, remove the links and nodes
@@ -147,14 +147,14 @@ HTMLWidgets.widget({
                 links = tree.links(nodes);
                 nodePaths = svgGroup.selectAll("path.link")
                     .data(links, function(d) {
-                        return d.target.id;
+                        return d.target[opts.id];
                     }).remove();
                 // remove child nodes
                 nodesExit = svgGroup.selectAll("g.node")
                     .data(nodes, function(d) {
-                        return d.id;
+                        return d[opts.id];
                     }).filter(function(d, i) {
-                        if (d.id == draggingNode.id) {
+                        if (d[opts.id] == draggingNode[opts.id]) {
                             return false;
                         }
                         return true;
@@ -164,7 +164,7 @@ HTMLWidgets.widget({
             // remove parent link
             parentLink = tree.links(tree.nodes(draggingNode.parent));
             svgGroup.selectAll('path.link').filter(function(d, i) {
-                if (d.target.id == draggingNode.id) {
+                if (d.target[opts.id] == draggingNode[opts.id]) {
                     return true;
                 }
                 return false;
@@ -398,7 +398,7 @@ HTMLWidgets.widget({
             // Update the nodes…
             node = svgGroup.selectAll("g.node")
                 .data(nodes, function(d) {
-                    return d.id || (d.id = ++i);
+                    return d[opts.id] || (d[opts.id] = ++i);
                 });
     
             // Enter any new nodes at the parent's previous position.
@@ -506,7 +506,7 @@ HTMLWidgets.widget({
             // 1. start by nesting our link paths by source
             var link_nested = d3.nest()
                                 .key(function(d){
-                                  return d.source.id
+                                  return d.source[opts.id]
                                 })
                                 .entries(links);
             // 2. manual method for stacking since d3.layout.stack
@@ -551,7 +551,7 @@ HTMLWidgets.widget({
             
             var link = svgGroup.selectAll("path.link")
                 .data(links, function(d) {
-                    return d.target.id;
+                    return d.target[opts.id];
                 });
     
             // Enter any new links at the parent's previous position.
