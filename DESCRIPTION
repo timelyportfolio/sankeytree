@@ -1,7 +1,26 @@
 Package: sankeytreeR
 Title: Sankey Diagrams as Collapsible Trees
 Version: 0.0.1
-Author: Kenton Russell
+Date: 2015-10-06
+Authors@R: c(
+      person(
+        "Mike", "Bostock"
+        , role = c("aut", "cph")
+        , comment = "d3.js library in htmlwidgets/lib, http://d3js.org"
+      ),
+      person(
+        "Rob", "Schmuecker"
+        , role = c("aut", "cph")
+        , comment = "JavaScript code for drawing sankeytree,
+                    http://bl.ocks.org/robschmuecker/0f29a2c867dcb1b44d18"
+      ),
+      person(
+        "Kent", "Russell"
+        , role = c("aut", "cre")
+        , comment = "R interface"
+        , email = "kent.russell@timelyportfolio.com"
+      )
+    )
 Maintainer: Kenton Russell <kent.russell@timelyportfolio.com>
 Description: Combining Sankey diagrams with collapsible trees and adding some new interactivity might help us analyze, instruct, and decide.
 License: MIT + file LICENSE

@@ -13,6 +13,8 @@ HTMLWidgets.widget({
   },
 
   renderValue: function(el, x, instance) {
+    // ATTRIBUTION:  much of this JavaScript code
+    //  came from http://bl.ocks.org/robschmuecker/0f29a2c867dcb1b44d18
 
       var opts = x.opts;
       var treeData = x.data; 
