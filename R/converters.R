@@ -20,16 +20,8 @@ convert_rpart = function (rpart_data = NULL) {
     }
     ,how="replace"
   )
-  data = jsonlite::toJSON(
-    data
-    ,auto_unbox = T
-  )
-  data = gsub( x=data, pattern = "kids", replacement="children")
-  data = gsub ( x=data, pattern = '"id":([0-9]*)', replacement = '"name":"node\\1"' )
   
-  # calling the root node by the dataset name, but it might make more sense to call it
-  # "root" so that the code can be generalized
-  #  data = sub (x = data, pattern = "node1", replacement = "mtcars")
+  #get all the other meta data we need and merge it in to the list
   
   ## changed pattern from [1-9] to [0-9] because we were missing node 10 
   rpk.text <- invisible( capture.output( print(rpk) ) ) %>>%
@@ -42,17 +34,17 @@ convert_rpart = function (rpart_data = NULL) {
           x <- .[[i]]
           tail(x,2) %>>%
             (tail_data ~
-              data.frame(
-                "id" = as.numeric(tail_data[1])
-                , description = tail_data[2]
-                , stringsAsFactors = F
-              ) 
+               data.frame(
+                 "id" = as.numeric(tail_data[1])
+                 , description = tail_data[2]
+                 , stringsAsFactors = F
+               ) 
             )
         }
       )
     )  %>>%
     (do.call(rbind,.))
-
+  
   # binding the node names from rpk with more of the relevant meta data from rp
   # i don't think that partykit imports this automatically for the inner nodes, so i did it manually
   rpk.text <- cbind(rpk.text, rpart_data$frame)
@@ -64,11 +56,26 @@ convert_rpart = function (rpart_data = NULL) {
   # so the final plot wouldn't have duplicate data
   rpk.text$description <- sapply(strsplit(rpk.text[,2], ":"), "[", 1)  
   
-  # replacing the node names from node1, node2, etc., with the extracted node names and metadata from
-  # rpk.text, and rp$table. 
-  for (i in 2:nrow(rpk.text)) {
-    data = sub (x = data, pattern = paste("node", i, sep = ""), 
-                replacement = paste(rpk.text[i,2], ", mean = ", rpk.text[i,7], ", n = ", rpk.text[i,4], sep = ""), fixed = T)
+  # do the merge of rpk.text with data by
+  # walking the tree and joining by id
+  join_data <- function(l){
+    modifyList(l,subset(rpk.text,id==l$id))
   }
-  data
+  
+  merge_data <- function(l){
+    l <- join_data(l)
+    if("kids" %in% names(l) && length(l$kids)>0){
+      lapply(
+        1:length(l$kids),
+        function(n){
+          l$kids[[n]] <<- merge_data(l$kids[[n]])
+        }
+      )
+    } else if("kids" %in% names(l) && length(l$kids)==0) {
+      l$kids <- NULL
+    }
+    l
+  }
+
+  merge_data(data)
 }
