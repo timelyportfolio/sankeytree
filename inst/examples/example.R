@@ -22,11 +22,29 @@ sankeytree(rp)
 sankeytree(rp, maxLabelLength = 10, nodeHeight = 100)
 
 
-
-
 # do with kyphosis example
 sankeytree(
   rpart(Kyphosis ~ Age + Number + Start, data = kyphosis),
   maxLabelLength = 10,
   nodeHeight = 200
 )
+
+
+
+# try standard flare.json d3.js hierarchy
+url <- "http://bl.ocks.org/mbostock/raw/1093025/flare.json"
+flare <- jsonlite::fromJSON(url,simplifyDataFrame=FALSE)
+sankeytree(flare)
+
+# use data.tree to assign a size at each level
+library(data.tree)
+flare_dt <- as.Node(flare,mode="explicit",childrenName="children")
+# only assigned at the lower levels
+flare_dt$Get("size")
+# assign a size at each level with sum
+flare_dt$Do(
+  function(x) {
+    Aggregate(x, "size", sum, cacheAttribute = "size", traversal = "post-order")
+  }
+)
+sankeytree(as.list(flare_dt,mode="explicit",unname=TRUE))
