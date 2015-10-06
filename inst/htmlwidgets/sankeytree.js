@@ -45,7 +45,8 @@ HTMLWidgets.widget({
         var viewerHeight = el.getBoundingClientRect().height;
     
         var tree = d3.layout.tree()
-            .size([viewerHeight, viewerWidth]);
+            .size([viewerHeight, viewerWidth])
+            .children(function(d){return d[opts.childrenName]});
     
         // define a d3 diagonal projection for use by the node paths later on.
         var diagonal = d3.svg.diagonal()
@@ -76,10 +77,10 @@ HTMLWidgets.widget({
         // Call visit function to establish maxLabelLength
         visit(treeData, function(d) {
             totalNodes++;
-            maxLabelLength = opts.maxLabelLength || Math.max(d.name.length, maxLabelLength);
+            maxLabelLength = opts.maxLabelLength || Math.max(d[opts.name].length, maxLabelLength);
     
         }, function(d) {
-            return d.children && d.children.length > 0 ? d.children : null;
+            return d[opts.childrenName] && d[opts.childrenName].length > 0 ? d[opts.childrenName] : null;
         });
     
     
@@ -87,10 +88,10 @@ HTMLWidgets.widget({
     
         function sortTree() {
             tree.sort(function(a, b) {
-                return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+                return b[opts.name].toLowerCase() < a[opts.name].toLowerCase() ? 1 : -1;
             });
         }
-        // Sort the tree initially incase the JSON isn't in a sorted order.
+        // Sort the tree initially in case the JSON isn't in a sorted order.
         sortTree();
     
         // TODO: Pan function, can be better implemented.
@@ -271,17 +272,17 @@ HTMLWidgets.widget({
         // Helper functions for collapsing and expanding nodes.
     
         function collapse(d) {
-            if (d.children) {
-                d._children = d.children;
+            if (d[opts.childrenName]) {
+                d._children = d[opts.childrenName];
                 d._children.forEach(collapse);
-                d.children = null;
+                d[opts.childrenName] = null;
             }
         }
     
         function expand(d) {
             if (d._children) {
-                d.children = d._children;
-                d.children.forEach(expand);
+                d[opts.childrenName] = d._children;
+                d[opts.childrenName].forEach(expand);
                 d._children = null;
             }
         }
@@ -329,7 +330,7 @@ HTMLWidgets.widget({
             scale = zoomListener.scale();
             x = -source.y0;
             y = -source.x0;
-            x = x * scale + ( source.name !== root.name ?  viewerWidth / 2 : viewerWidth / 4 );
+            x = x * scale + ( source[opts.name] !== root[opts.name] ?  viewerWidth / 2 : viewerWidth / 4 );
             y = y * scale + viewerHeight / 2;
             d3.select('g').transition()
                 .duration(duration)
@@ -341,11 +342,11 @@ HTMLWidgets.widget({
         // Toggle children function
     
         function toggleChildren(d) {
-            if (d.children) {
-                d._children = d.children;
-                d.children = null;
+            if (d[opts.childrenName]) {
+                d._children = d[opts.childrenName];
+                d[opts.childrenName] = null;
             } else if (d._children) {
-                d.children = d._children;
+                d[opts.childrenName] = d._children;
                 d._children = null;
             }
             return d;
@@ -367,11 +368,11 @@ HTMLWidgets.widget({
             var levelWidth = [1];
             var childCount = function(level, n) {
     
-                if (n.children && n.children.length > 0) {
+                if (n[opts.childrenName] && n[opts.childrenName].length > 0) {
                     if (levelWidth.length <= level + 1) levelWidth.push(0);
     
-                    levelWidth[level + 1] += n.children.length;
-                    n.children.forEach(function(d) {
+                    levelWidth[level + 1] += n[opts.childrenName].length;
+                    n[opts.childrenName].forEach(function(d) {
                         childCount(level + 1, d);
                     });
                 }
@@ -418,15 +419,15 @@ HTMLWidgets.widget({
     
             nodeEnter.append("text")
                 .attr("x", function(d) {
-                    return d.children || d._children ? -10 : 10;
+                    return d[opts.childrenName] || d._children ? -10 : 10;
                 })
                 .attr("dy", ".35em")
                 .attr('class', 'nodeText')
                 .attr("text-anchor", function(d) {
-                    return d.children || d._children ? "end" : "start";
+                    return d[opts.childrenName] || d._children ? "end" : "start";
                 })
                 .text(function(d) {
-                    return d.name;
+                    return d[opts.name];
                 })
                 .style("fill-opacity", 0);
     
@@ -447,13 +448,13 @@ HTMLWidgets.widget({
             // Update the text to reflect whether node has children or not.
             node.select('text')
                 .attr("x", function(d) {
-                    return d.children || d._children ? -10 : 10;
+                    return d[opts.childrenName] || d._children ? -10 : 10;
                 })
                 .attr("text-anchor", function(d) {
-                    return d.children || d._children ? "end" : "start";
+                    return d[opts.childrenName] || d._children ? "end" : "start";
                 })
                 .text(function(d) {
-                    return d.name;
+                    return d[opts.name];
                 });
     
             // Change the circle fill depending on whether it has children and is collapsed
@@ -493,7 +494,7 @@ HTMLWidgets.widget({
             // Size link width according to n based on total n
             wscale = d3.scale.linear()
                 .range([0,50])
-                .domain([0,treeData.info.fitted["(fitted)"].length])
+                .domain([0,treeData[opts.value]])
                 
             
             // probably not the best way or place to do this
@@ -513,12 +514,8 @@ HTMLWidgets.widget({
             link_nested.forEach(function(d){
               var ystacky = 0;
               d.values.reverse().forEach(function(dd){
-                var ywidth = wscale(
-                                + dd.target.name.replace(/.*n = ([0-9]*)/,"$1")
-                             );
-                var srcwidth = wscale(
-                                + dd.source.name.replace(/.*n = ([0-9]*)/,"$1")
-                             );
+                var ywidth = wscale(dd.target[opts.value])
+                var srcwidth = wscale(dd.source[opts.value])
                 srcwidth = isNaN(srcwidth) ? wscale.range()[1]/2 : srcwidth;
                 ystacky = ystacky + ywidth;                               
                 dd.x = dd.source.x + srcwidth/2 - ystacky + ywidth/2;
@@ -537,7 +534,7 @@ HTMLWidgets.widget({
                           })
                           .y(function(d){
                             return wscale(
-                              + d.target.name.replace(/.*n = ([0-9]*)/,"$1")
+                              + d.target[opts.name].replace(/.*n = ([0-9]*)/,"$1")
                             )
                           })
                           .out(function(d,y0,y){
@@ -572,7 +569,7 @@ HTMLWidgets.widget({
                 });
 
             link.style("stroke-width",function(d){
-              return wscale( + d.target.name.replace(/.*n = ([0-9]*)/,"$1") )
+              return wscale( d.target[opts.value] )
             });
             
             // Transition links to their new position.

@@ -7,6 +7,10 @@
 #' @export
 sankeytree <- function(
   data = NULL,
+  name = "name",
+  id = "id",
+  value = "size",
+  childrenName = "children",
   maxLabelLength = NULL,
   nodeHeight = NULL,
   width = NULL, height = NULL) {
@@ -14,12 +18,19 @@ sankeytree <- function(
   # convert rpart data
   if(inherits(data,"rpart")){
     data <- convert_rpart(data)
+    name <- "description"
+    value <- "n"
+    childrenName = "kids"
   }
 
   # forward options using x
   x = list(
     data = data,
     opts = list(
+      name = name,
+      id = id,
+      value = value,
+      childrenName = childrenName,
       maxLabelLength = maxLabelLength,
       nodeHeight = nodeHeight
     )

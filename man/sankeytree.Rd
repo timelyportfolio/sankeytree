@@ -6,7 +6,8 @@
 \alias{sankeytree-package}
 \title{Sankey Diagrams as Collapsible Trees}
 \usage{
-sankeytree(data = NULL, maxLabelLength = NULL, nodeHeight = NULL,
+sankeytree(data = NULL, name = "name", id = "id", value = "size",
+  childrenName = "children", maxLabelLength = NULL, nodeHeight = NULL,
   width = NULL, height = NULL)
 }
 \description{
