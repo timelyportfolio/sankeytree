@@ -33,6 +33,13 @@ HTMLWidgets.widget({
         var duration = 750;
         var root;
         
+        // add treeColors if told yes
+        if(x.opts.treeColors){
+          var tc = TreeColors("add");
+          tc.children(opts.childrenName);
+          tc(treeData);
+        }
+        
         // define the baseSvg, attaching a class for styling and the zoomListener
         var baseSvg = d3.select(el).append("svg")
             .attr("width", "100%")
@@ -551,7 +558,7 @@ HTMLWidgets.widget({
             
             var link = svgGroup.selectAll("path.link")
                 .data(links, function(d) {
-                    return d.target[opts.id];
+                  return d.target[opts.id];
                 });
     
             // Enter any new links at the parent's previous position.
@@ -575,8 +582,19 @@ HTMLWidgets.widget({
             // Transition links to their new position.
             link.transition()
                 .duration(duration)
-                .attr("d", diagonal);
-
+                .attr("d", diagonal)
+                .style("stroke",function(d){
+                  if(d.target.color){
+                    return d3.hcl(
+                      d.target.color.h,
+                      d.target.color.c,
+                      d.target.color.l
+                    )
+                  } else {
+                    return "#ccc"
+                  }
+                });
+                
             // Transition exiting nodes to the parent's new position.
             link.exit().transition()
                 .duration(duration)

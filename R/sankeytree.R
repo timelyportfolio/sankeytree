@@ -11,6 +11,7 @@ sankeytree <- function(
   id = "id",
   value = "size",
   childrenName = "children",
+  treeColors = TRUE,
   maxLabelLength = NULL,
   nodeHeight = NULL,
   width = NULL, height = NULL) {
@@ -31,6 +32,7 @@ sankeytree <- function(
       id = id,
       value = value,
       childrenName = childrenName,
+      treeColors = treeColors,
       maxLabelLength = maxLabelLength,
       nodeHeight = nodeHeight
     )
