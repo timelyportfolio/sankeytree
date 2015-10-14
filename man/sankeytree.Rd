@@ -7,12 +7,13 @@
 \title{Sankey Diagrams as Collapsible Trees}
 \usage{
 sankeytree(data = NULL, name = "name", id = "id", value = "size",
-  childrenName = "children", maxLabelLength = NULL, nodeHeight = NULL,
-  width = NULL, height = NULL)
+  childrenName = "children", treeColors = TRUE, maxLabelLength = NULL,
+  nodeHeight = NULL, tooltip = NULL, width = NULL, height = NULL)
 }
 \description{
 Combining Sankey diagrams with collapsible trees and adding some new interactivity might help us analyze, instruct, and decide.
 
-<Add Description>
+Create interactive d3.js visualizations of hierarchical data combining
+Sankey diagrams with tree layout.
 }
 

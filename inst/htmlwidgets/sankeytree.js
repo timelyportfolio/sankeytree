@@ -40,13 +40,32 @@ HTMLWidgets.widget({
           tc(treeData);
         }
         
+        // work on tooltip
+        var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .html(function(d) { return d; });
+                    
+        if(opts.tooltip){
+          if(Array.isArray(opts.tooltip)){
+            tip.html(function(d){
+              var htmltip = [];
+              opts.tooltip.forEach(function(ky){
+                htmltip.push( ky + ": " + d[ky] )
+              })
+              return htmltip.join("<br/>")
+            })
+          } else if(typeof(opts.tooltip) === "function"){
+            tip.html(opts.tooltip)
+          }
+        }
+        
         // define the baseSvg, attaching a class for styling and the zoomListener
         var baseSvg = d3.select(el).append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
             .attr("class", "overlay")      
             
-  
+
         // size of the diagram
         var viewerWidth = el.getBoundingClientRect().width;
         var viewerHeight = el.getBoundingClientRect().height;
@@ -422,7 +441,9 @@ HTMLWidgets.widget({
                 .attr("r", 0)
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
-                });
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
     
             nodeEnter.append("text")
                 .attr("x", function(d) {
@@ -619,6 +640,8 @@ HTMLWidgets.widget({
     
         // Append a group which holds all nodes and which the zoom Listener can act upon.
         var svgGroup = baseSvg.append("g");
+        
+        svgGroup.call(tip);
     
         // Define the root
         root = treeData;

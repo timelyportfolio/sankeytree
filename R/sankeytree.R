@@ -1,6 +1,7 @@
-#' <Add Title>
+#' Interactive d3.js Sankey Tree Visualization
 #'
-#' <Add Description>
+#' Create interactive d3.js visualizations of hierarchical data combining
+#' Sankey diagrams with tree layout.
 #'
 #' @import htmlwidgets
 #'
@@ -14,6 +15,7 @@ sankeytree <- function(
   treeColors = TRUE,
   maxLabelLength = NULL,
   nodeHeight = NULL,
+  tooltip = NULL,
   width = NULL, height = NULL) {
   
   # convert rpart data
@@ -34,7 +36,8 @@ sankeytree <- function(
       childrenName = childrenName,
       treeColors = treeColors,
       maxLabelLength = maxLabelLength,
-      nodeHeight = nodeHeight
+      nodeHeight = nodeHeight,
+      tooltip = tooltip
     )
   )
 

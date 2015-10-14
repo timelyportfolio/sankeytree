@@ -3,6 +3,11 @@ dependencies:
     version: 3.5.6
     src: htmlwidgets/lib/d3
     script: d3.min.js
+  - name: d3-tip
+    version: 0.6.7
+    src: htmlwidgets/lib/d3-tip
+    script: d3-tip.js
+    stylesheet: d3-tip.css
   - name: treecolors
     version: 0.1.2
     src: htmlwidgets/lib/treecolors

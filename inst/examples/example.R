@@ -21,6 +21,13 @@ sankeytree(rp)
 
 sankeytree(rp, maxLabelLength = 10, nodeHeight = 100)
 
+sankeytree(
+  rp,
+  maxLabelLength = 10,
+  nodeHeight = 100,
+  tooltip = c("n","var","description")
+)
+
 
 # do with kyphosis example
 sankeytree(
