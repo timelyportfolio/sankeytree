@@ -404,7 +404,13 @@ HTMLWidgets.widget({
                 }
             };
             childCount(0, root);
-            var newHeight = d3.max(levelWidth) * ( opts.nodeHeight || 25 ); // 25 pixels per line  
+            var newHeight = d3.max(levelWidth) * ( opts.nodeHeight || 25 ); // 25 pixels per line
+            
+            // Size link width according to n based on total n
+            wscale = d3.scale.linear()
+                .range([0,opts.nodeHeight || 25])
+                .domain([0,treeData[opts.value]])
+                
             
             
             tree = tree.size([newHeight, viewerWidth]);
@@ -436,12 +442,26 @@ HTMLWidgets.widget({
                 })
                 .on('click', click);
     
+            /*
             nodeEnter.append("circle")
                 .attr('class', 'nodeCircle')
                 .attr("r", 0)
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
                 })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
+            */
+                
+            nodeEnter.append("rect")
+                .attr("class", "nodeRect")
+                .attr("x", -2.5)
+                .attr("y", function(d){return -wscale(d[opts.value])/2})
+                .attr("height", function(d){return wscale(d[opts.value])})
+                .attr("width", 5)
+                .style("fill","white")
+                .style("stroke","white")
+                .style("pointer-events","all")
                 .on('mouseover', tip.show)
                 .on('mouseout', tip.hide);
     
@@ -519,11 +539,6 @@ HTMLWidgets.widget({
     
             // Update the links…
             
-            // Size link width according to n based on total n
-            wscale = d3.scale.linear()
-                .range([0,50])
-                .domain([0,treeData[opts.value]])
-                
             
             // probably not the best way or place to do this
             //   but start here with adjusting paths higher
