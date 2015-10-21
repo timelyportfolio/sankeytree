@@ -6,9 +6,7 @@ HTMLWidgets.widget({
 
   initialize: function(el, width, height) {
 
-    return {
-      // TODO: add instance fields as required
-    }
+    return {  }
 
   },
 
@@ -41,11 +39,13 @@ HTMLWidgets.widget({
         }
         
         // work on tooltip
-        var tip = d3.tip()
-                    .attr('class', 'd3-tip')
-                    .html(function(d) { return d; });
+        var tip = {};
                     
         if(opts.tooltip){
+          tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .html(function(d) { return d; });
+                  
           if(Array.isArray(opts.tooltip)){
             tip.html(function(d){
               var htmltip = [];
@@ -462,8 +462,8 @@ HTMLWidgets.widget({
                 .style("fill","white")
                 .style("stroke","white")
                 .style("pointer-events","all")
-                .on('mouseover', tip.show)
-                .on('mouseout', tip.hide);
+                .on('mouseover', opts.tooltip ? tip.show : null)
+                .on('mouseout', opts.tooltip ? tip.hide : null);
     
             nodeEnter.append("text")
                 .attr("x", function(d) {
@@ -656,7 +656,10 @@ HTMLWidgets.widget({
         // Append a group which holds all nodes and which the zoom Listener can act upon.
         var svgGroup = baseSvg.append("g");
         
-        svgGroup.call(tip);
+        // if tooltip then set it up
+        if(opts.tooltip){
+          svgGroup.call(tip);
+        }
     
         // Define the root
         root = treeData;
