@@ -29,8 +29,8 @@ sankeytree <- function(
   # if color is already specified by RGB format, not re-computing again
   if (!is.null(data$color) && 
       is.character(data$color) && 
-      substring(data$color, 1, 1) == "#" && 
-      nchar(data$color) > 1) {
+      grepl("^#[abcdef0-9][abcdef0-9]?[abcdef0-9]?[abcdef0-9]?[abcdef0-9]?[abcdef0-9]?$",
+            data$color, ignore.case = TRUE)){
     treeColors = FALSE
   }
 
