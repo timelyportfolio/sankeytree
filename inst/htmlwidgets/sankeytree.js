@@ -621,11 +621,15 @@ HTMLWidgets.widget({
                 .attr("d", diagonal)
                 .style("stroke",function(d){
                   if(d.target.color){
-                    return d3.hcl(
-                      d.target.color.h,
-                      d.target.color.c,
-                      d.target.color.l
-                    )
+                    if (typeof d.target.color === 'string'){
+                      return d3.lab(d.target.color)
+                    } else {
+                      return d3.hcl(
+                        d.target.color.h,
+                        d.target.color.c,
+                        d.target.color.l
+                      )
+                    }
                   } else {
                     return "#ccc"
                   }
