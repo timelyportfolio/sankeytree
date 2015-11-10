@@ -65,7 +65,7 @@
 
       //1. divide range in N equal parts ri with i = 1, ... ,N;
       //   For convenience, we will use i = 0, ... , n - 1 instead of i = 1, ..., n
-      var r = Array.apply(null, {length: n}).map(Number.call, Number);
+      var r = d3.range(n);
 
       //2. if perm then permute the ri’s;
       if(permutate) {

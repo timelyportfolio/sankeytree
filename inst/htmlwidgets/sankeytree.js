@@ -32,11 +32,11 @@ HTMLWidgets.widget({
         var root;
         
         // add treeColors if told yes
-        if(x.opts.treeColors){
+        /* if(x.opts.treeColors){
           var tc = TreeColors("add");
           tc.children(opts.childrenName);
           tc(treeData);
-        }
+        } */
         
         // work on tooltip
         var tip = {};
@@ -621,11 +621,7 @@ HTMLWidgets.widget({
                 .attr("d", diagonal)
                 .style("stroke",function(d){
                   if(d.target.color){
-                    return d3.hcl(
-                      d.target.color.h,
-                      d.target.color.c,
-                      d.target.color.l
-                    )
+                    return d3.lab(d.target.color)
                   } else {
                     return "#ccc"
                   }
