@@ -25,6 +25,11 @@ sankeytree <- function(
     value <- "n"
     childrenName = "kids"
   }
+  
+  # if color is already specified by RGB format, not re-computing again
+  if (!is.null(data$color) && is.character(data$color)) {
+    treeColors = FALSE
+  }
 
   # forward options using x
   x = list(
