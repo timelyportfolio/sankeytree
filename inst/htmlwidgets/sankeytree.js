@@ -621,7 +621,9 @@ HTMLWidgets.widget({
                 .attr("d", diagonal)
                 .style("stroke",function(d){
                   if(d.target.color){
-                    if (typeof d.target.color === 'string'){
+                    if (typeof d.target.color === 'string' &&
+                        d.target.color.charAt(0) === '#' &&
+                        d.target.color.length > 1){
                       return d3.lab(d.target.color)
                     } else {
                       return d3.hcl(
