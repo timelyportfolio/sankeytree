@@ -5,6 +5,16 @@ HTMLWidgets.widget({
   type: 'output',
 
   initialize: function(el, width, height) {
+    
+    d3.select(el)
+            .append("div")
+            .classed("svg-container", true)
+            .append("svg")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 " + width + " " + height)
+            .classed("svg-content-responsive", true)
+            .attr("width", "100%")
+            .attr("height", "100%");
 
     return {  }
 
@@ -60,10 +70,10 @@ HTMLWidgets.widget({
         }
         
         // define the baseSvg, attaching a class for styling and the zoomListener
-        var baseSvg = d3.select(el).append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("class", "overlay")      
+        var baseSvg = d3.select(el)
+            .select("div")
+            .select("svg")
+
             
 
         // size of the diagram
@@ -659,6 +669,7 @@ HTMLWidgets.widget({
     
         // Append a group which holds all nodes and which the zoom Listener can act upon.
         var svgGroup = baseSvg.append("g");
+                              
         
         // if tooltip then set it up
         if(opts.tooltip){
