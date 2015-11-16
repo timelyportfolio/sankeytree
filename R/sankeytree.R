@@ -57,7 +57,8 @@ sankeytree <- function(
     height = height,
     sizingPolicy = htmlwidgets::sizingPolicy(
       padding = 5,
-      browser.fill = TRUE
+      browser.fill = TRUE, # resizing will not work if FALSE
+      viewer.fill = TRUE
     ),
     package = 'sankeytreeR'
   )
