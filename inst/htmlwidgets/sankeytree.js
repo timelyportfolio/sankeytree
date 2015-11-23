@@ -420,8 +420,14 @@ HTMLWidgets.widget({
             };
             childCount(0, root);
             newHeight = d3.max(levelWidth) * ( opts.nodeHeight || 25 ); // 25 pixels per line
-            newWidth = (levelWidth.length + 2) * (meanLabelLength * pxPerChar) + 
+            
+            if (opts.maxLabelLength) {
+              newWidth = (levelWidth.length + 2) * (maxLabelLength * 10) + 
+                        levelWidth.length * 10; // node link size + node rect size              
+            } else {
+              newWidth = (levelWidth.length + 2) * (meanLabelLength * pxPerChar) + 
                         levelWidth.length * 10; // node link size + node rect size
+            }
             
             // Size link width according to n based on total n
             wscale = d3.scale.linear()
@@ -696,7 +702,14 @@ HTMLWidgets.widget({
         // since we can override node height and label length (width)
         // if zoom scale == 1 then auto scale to fit tree in container
         if (zoomListener.scale() == 1) {
-          zoomListener.scale( viewerWidth/tree.size()[1]*0.85 ); // this works when width > height
+          var xscale = viewerHeight/tree.size()[0]*0.85,
+              yscale = viewerWidth/tree.size()[1]*0.85;
+          if (xscale < yscale) {
+            zoomListener.scale( xscale ); 
+          } else {
+            zoomListener.scale( yscale ); 
+          }
+          
         }
           
         centerNode(root);
