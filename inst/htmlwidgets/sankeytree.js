@@ -40,7 +40,7 @@ HTMLWidgets.widget({
         var i = 0;
         var duration = 750;
         var root;
-        var pxPerChar = 5;
+        var pxPerChar = 6;
         var newWidth;
         var newHeight;
         
