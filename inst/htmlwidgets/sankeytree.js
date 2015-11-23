@@ -5,8 +5,18 @@ HTMLWidgets.widget({
   type: 'output',
 
   initialize: function(el, width, height) {
+    
+    d3.select(el)
+            .append("div")
+            .classed("svg-container", true)
+            .append("svg")
+            .attr("preserveAspectRatio", "xMinYMin meet")
+            .attr("viewBox", "0 0 " + width + " " + height)
+            .classed("svg-content-responsive", true)
+            .attr("width", "100%")
+            .attr("height", "100%");
 
-    return {  }
+    return {  };
 
   },
 
@@ -30,6 +40,9 @@ HTMLWidgets.widget({
         var i = 0;
         var duration = 750;
         var root;
+        var pxPerChar = 6;
+        var newWidth;
+        var newHeight;
         
         // add treeColors if told yes
         if(x.opts.treeColors){
@@ -50,20 +63,20 @@ HTMLWidgets.widget({
             tip.html(function(d){
               var htmltip = [];
               opts.tooltip.forEach(function(ky){
-                htmltip.push( ky + ": " + d[ky] )
-              })
-              return htmltip.join("<br/>")
-            })
+                htmltip.push( ky + ": " + d[ky] );
+              });
+              return htmltip.join("<br/>");
+            });
           } else if(typeof(opts.tooltip) === "function"){
-            tip.html(opts.tooltip)
+            tip.html(opts.tooltip);
           }
         }
         
         // define the baseSvg, attaching a class for styling and the zoomListener
-        var baseSvg = d3.select(el).append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("class", "overlay")      
+        var baseSvg = d3.select(el)
+            .select("div")
+            .select("svg");
+
             
 
         // size of the diagram
@@ -101,14 +114,15 @@ HTMLWidgets.widget({
         }
     
         // Call visit function to establish maxLabelLength
+        var meanLabelLength = 0.0;
         visit(treeData, function(d) {
             totalNodes++;
             maxLabelLength = opts.maxLabelLength || Math.max(d[opts.name].length, maxLabelLength);
-    
+            meanLabelLength = meanLabelLength + d[opts.name].length;
         }, function(d) {
             return d[opts.childrenName] && d[opts.childrenName].length > 0 ? d[opts.childrenName] : null;
         });
-    
+        meanLabelLength = (meanLabelLength/totalNodes) | 0 + 1;
     
         // sort the tree according to the node names
     
@@ -386,7 +400,8 @@ HTMLWidgets.widget({
             update(d);
             centerNode(d);
         }
-    
+        
+
         function update(source) {
             // Compute the new height, function counts total children of root node and sets tree height accordingly.
             // This prevents the layout looking squashed when new nodes are made visible or looking sparse when nodes are removed
@@ -404,28 +419,39 @@ HTMLWidgets.widget({
                 }
             };
             childCount(0, root);
-            var newHeight = d3.max(levelWidth) * ( opts.nodeHeight || 25 ); // 25 pixels per line
+            newHeight = d3.max(levelWidth) * ( opts.nodeHeight || 25 ); // 25 pixels per line
+            
+            if (opts.maxLabelLength) {
+              newWidth = (levelWidth.length + 2) * (maxLabelLength * 10) + 
+                        levelWidth.length * 10; // node link size + node rect size              
+            } else {
+              newWidth = (levelWidth.length + 2) * (meanLabelLength * pxPerChar) + 
+                        levelWidth.length * 10; // node link size + node rect size
+            }
             
             // Size link width according to n based on total n
             wscale = d3.scale.linear()
                 .range([0,opts.nodeHeight || 25])
-                .domain([0,treeData[opts.value]])
-                
+                .domain([0,treeData[opts.value]]);
             
-            
-            tree = tree.size([newHeight, viewerWidth]);
+            tree = tree.size([newHeight, newWidth]);
     
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
     
             // Set widths between levels based on maxLabelLength.
-            nodes.forEach(function(d) {
-                d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
-                // alternatively to keep a fixed scale one can set a fixed depth per level
-                // Normalize for fixed-depth by commenting out below line
-                // d.y = (d.depth * 500); //500px per level.
-            });
+            if (opts.maxLabelLength) {
+                nodes.forEach(function(d) {
+                    d.y = (d.depth * (maxLabelLength * 10));  //maxLabelLength * 10px
+                });
+            } else {
+                nodes.forEach(function(d) {
+                    d.y = (d.depth * (meanLabelLength * pxPerChar)); //meanLabelLength * 5px
+                });
+            }
+
+
     
             // Update the nodes…
             node = svgGroup.selectAll("g.node")
@@ -659,6 +685,7 @@ HTMLWidgets.widget({
     
         // Append a group which holds all nodes and which the zoom Listener can act upon.
         var svgGroup = baseSvg.append("g");
+                              
         
         // if tooltip then set it up
         if(opts.tooltip){
@@ -675,7 +702,14 @@ HTMLWidgets.widget({
         // since we can override node height and label length (width)
         // if zoom scale == 1 then auto scale to fit tree in container
         if (zoomListener.scale() == 1) {
-          zoomListener.scale( viewerHeight/tree.size()[0] );
+          var xscale = viewerHeight/tree.size()[0]*0.85,
+              yscale = viewerWidth/tree.size()[1]*0.85;
+          if (xscale < yscale) {
+            zoomListener.scale( xscale ); 
+          } else {
+            zoomListener.scale( yscale ); 
+          }
+          
         }
           
         centerNode(root);
