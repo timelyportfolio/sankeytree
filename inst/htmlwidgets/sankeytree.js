@@ -16,7 +16,7 @@ HTMLWidgets.widget({
             .attr("width", "100%")
             .attr("height", "100%");
 
-    return {  }
+    return {  };
 
   },
 
@@ -63,19 +63,19 @@ HTMLWidgets.widget({
             tip.html(function(d){
               var htmltip = [];
               opts.tooltip.forEach(function(ky){
-                htmltip.push( ky + ": " + d[ky] )
-              })
-              return htmltip.join("<br/>")
-            })
+                htmltip.push( ky + ": " + d[ky] );
+              });
+              return htmltip.join("<br/>");
+            });
           } else if(typeof(opts.tooltip) === "function"){
-            tip.html(opts.tooltip)
+            tip.html(opts.tooltip);
           }
         }
         
         // define the baseSvg, attaching a class for styling and the zoomListener
         var baseSvg = d3.select(el)
             .select("div")
-            .select("svg")
+            .select("svg");
 
             
 
@@ -435,14 +435,17 @@ HTMLWidgets.widget({
                 links = tree.links(nodes);
     
             // Set widths between levels based on maxLabelLength.
+            if (opts.maxLabelLength) {
+                nodes.forEach(function(d) {
+                    d.y = (d.depth * (maxLabelLength * 10));  //maxLabelLength * 10px
+                });
+            } else {
+                nodes.forEach(function(d) {
+                    d.y = (d.depth * (meanLabelLength * pxPerChar)); //meanLabelLength * 5px
+                });
+            }
 
-            nodes.forEach(function(d) {
-                d.y = (d.depth * (meanLabelLength * pxPerChar)); //maxLabelLength * 10px
-                //d.y = (d.depth * (maxLabelLength * 10));
-                // alternatively to keep a fixed scale one can set a fixed depth per level
-                // Normalize for fixed-depth by commenting out below line
-                // d.y = (d.depth * 500); //500px per level.
-            });
+
     
             // Update the nodes…
             node = svgGroup.selectAll("g.node")
