@@ -51,7 +51,7 @@ flare_dt$Get("size")
 # assign a size at each level with sum
 flare_dt$Do(
   function(x) {
-    Aggregate(x, "size", sum, cacheAttribute = "size", traversal = "post-order")
+    x$size <- Aggregate(x, "size", sum, traversal = "post-order")
   }
 )
-sankeytree(as.list(flare_dt,mode="explicit",unname=TRUE))
+sankeytree(ToListExplicit(flare_dt,unname=TRUE))
