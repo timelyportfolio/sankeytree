@@ -59,6 +59,7 @@ convert_rpart = function (rpart_data = NULL) {
   # do the merge of rpk.text with data by
   # walking the tree and joining by id
   join_data <- function(l){
+    l <- unclass(l)
     modifyList(l,subset(rpk.text,id==l$id))
   }
   
