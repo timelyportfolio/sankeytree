@@ -85,7 +85,8 @@ HTMLWidgets.widget({
     
         var tree = d3.layout.tree()
             .size([viewerHeight, viewerWidth])
-            .children(function(d){return d[opts.childrenName]});
+            .children(function(d){return d[opts.childrenName]})
+            .value(function(d){return d[opts.value]});
     
         // define a d3 diagonal projection for use by the node paths later on.
         var diagonal = d3.svg.diagonal()
@@ -429,16 +430,17 @@ HTMLWidgets.widget({
                         levelWidth.length * 10; // node link size + node rect size
             }
             
-            // Size link width according to n based on total n
-            wscale = d3.scale.linear()
-                .range([0,opts.nodeHeight || 25])
-                .domain([0,treeData[opts.value]]);
-            
             tree = tree.size([newHeight, newWidth]);
     
             // Compute the new tree layout.
             var nodes = tree.nodes(root).reverse(),
                 links = tree.links(nodes);
+                
+            
+            // Size link width according to n based on total n
+            wscale = d3.scale.linear()
+                .range([0,opts.nodeHeight || 25])
+                .domain([0,treeData[opts.value]]);
     
             // Set widths between levels based on maxLabelLength.
             if (opts.maxLabelLength) {
@@ -482,8 +484,8 @@ HTMLWidgets.widget({
             nodeEnter.append("rect")
                 .attr("class", "nodeRect")
                 .attr("x", -2.5)
-                .attr("y", function(d){return -wscale(d[opts.value])/2})
-                .attr("height", function(d){return wscale(d[opts.value])})
+                .attr("y", function(d){return -wscale(d.value)/2})
+                .attr("height", function(d){return wscale(d.value)})
                 .attr("width", 5)
                 .style("fill","white")
                 .style("stroke","white")
@@ -583,8 +585,8 @@ HTMLWidgets.widget({
             link_nested.forEach(function(d){
               var ystacky = 0;
               d.values.reverse().forEach(function(dd){
-                var ywidth = wscale(dd.target[opts.value])
-                var srcwidth = wscale(dd.source[opts.value])
+                var ywidth = wscale(dd.target.value)
+                var srcwidth = wscale(dd.source.value)
                 srcwidth = isNaN(srcwidth) ? wscale.range()[1]/2 : srcwidth;
                 ystacky = ystacky + ywidth;                               
                 dd.x = dd.source.x + srcwidth/2 - ystacky + ywidth/2;
@@ -638,7 +640,7 @@ HTMLWidgets.widget({
                 });
 
             link.style("stroke-width",function(d){
-              return wscale( d.target[opts.value] )
+              return wscale( d.target.value )
             });
             
             // Transition links to their new position.
