@@ -3,7 +3,7 @@ HTMLWidgets.widget({
   name: 'sankeytree',
 
   type: 'output',
-
+  
   initialize: function(el, width, height) {
     
     d3.select(el)
@@ -15,14 +15,19 @@ HTMLWidgets.widget({
             .classed("svg-content-responsive", true)
             .attr("width", "100%")
             .attr("height", "100%");
+            
+    var instance = {};
 
-    return {  };
+    return instance;
 
   },
 
   renderValue: function(el, x, instance) {
     // ATTRIBUTION:  much of this JavaScript code
     //  came from http://bl.ocks.org/robschmuecker/0f29a2c867dcb1b44d18
+
+      var dispatch = d3.dispatch("update","click","mouseover","mouseout");
+      d3.rebind(instance, dispatch, 'on');
 
       var opts = x.opts;
       var treeData = x.data; 
@@ -683,6 +688,8 @@ HTMLWidgets.widget({
                 d.x0 = d.x;
                 d.y0 = d.y;
             });
+
+            dispatch.update({root: root, source: source});
         }
     
         // Append a group which holds all nodes and which the zoom Listener can act upon.
