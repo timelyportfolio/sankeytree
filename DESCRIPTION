@@ -1,7 +1,7 @@
 Package: sankeytreeR
 Title: Sankey Diagrams as Collapsible Trees
-Version: 0.0.1
-Date: 2015-10-06
+Version: 0.0.2
+Date: 2016-12-01
 Authors@R: c(
       person(
         "Mike", "Bostock"
